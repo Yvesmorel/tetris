@@ -1,38 +1,76 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+/* Conteneur principal pour toutes les formes */
+        .shapes-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            justify-content: center;
+            max-width: 1000px;
+        }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+        /* Style pour le conteneur d'une seule forme */
+        .tetromino-wrapper {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .tetromino-wrapper h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            color: #555;
+        }
 
-.App-link {
-  color: #61dafb;
-}
+        /* Style de la grille et des cellules */
+        .tetromino-grid {
+            display: grid;
+            /* Un petit espace entre les cellules pour bien les distinguer */
+            gap: 2px;
+            /* Fond de la grille pour faire ressortir les bordures */
+            /* background-color: #ddd;
+            border: 2px solid #ccc; */
+            padding: 2px;
+            border-radius: 4px;
+        
+        }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+        .cell {
+            /* Taille fixe pour des cellules carrées */
+            width: 25px;
+            height: 25px;
+            /* Bordure par défaut pour toutes les cellules */
+            border: 1px solid transparent;
+        }
+
+        /* Style pour les cellules INVISIBLES (autour de la pièce) */
+        .cell.invisible {
+            visibility: hidden;
+        }
+
+        /* Style pour les cellules VISIBLES (la pièce elle-même) */
+        .cell.visible {
+            border-color: rgba(0, 0, 0, 0.3); /* Bordure légèrement plus foncée */
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.2); /* Effet de relief */
+        }
+
+        /* --- Définitions des Grilles Spécifiques --- */
+        /* Grille 5x4 pour T, L, J, S, Z */
+        /* .T, .L, .J, .S, .Z{ grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(4, 1fr); }
+        /* Grille 4x4 pour O (Carré) */
+        /* .O { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+        /* Grille 6x3 pour I (Ligne) */
+        /* .I { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(3, 1fr); } */ */ */
+
+        /* --- Couleurs des Pièces Tetris Classiques --- */
+        
+        .L .visible { background-color: #f97316; } /* Orange */
+        .J .visible { background-color: #3b82f6; } /* Bleu */
+        .S .visible { background-color: #22c55e; } /* Vert */
+        .Z .visible { background-color: #ef4444; } /* Rouge */
+        .O .visible { background-color: #eab308; } /* Jaune */
+        .I .visible { background-color: #06b6d4; } /* Cyan */
+        .T .visible { background-color: #a855f7; } /* Violet */
+
