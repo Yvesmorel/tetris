@@ -16,7 +16,7 @@ function Board({ rows, cols }: { rows: number; cols: number }) {
   );
 
   useEffect(() => {
-    console.log(3);
+  
 
     if (typeof window !== "undefined")
       window.document.addEventListener("keydown", rotate);
