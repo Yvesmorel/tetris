@@ -1,6 +1,8 @@
+import { GRID_CASE_WIDTH } from "../data/forme";
+
 export function rotateMatrix(matrix: number[][], sens: "left" | "rigth") {
   const matrixRotated = [];
-  
+
   if (sens === "rigth") {
     for (let i = 0; i < matrix[0].length; i++) {
       const row = [];
@@ -15,15 +17,102 @@ export function rotateMatrix(matrix: number[][], sens: "left" | "rigth") {
     }
   }
 
-  return matrixRotated
+  return matrixRotated;
 }
 
+export const getInitialBoard = (rows: number, cols: number) =>
+  Array.from({ length: rows }, (_, i) =>
+    Array.from({ length: cols }, (_) => (i > 29 ? 1 : 0)),
+  );
 
-export function rotate(event:KeyboardEvent) {
+export function verifierCollision(element1: any, element2: any) {
+  const rect1 = element1.getBoundingClientRect();
+  const rect2 = element2.getBoundingClientRect();
 
-        if (event.ctrlKey) {
-          event.preventDefault(); // Empêche le comportement par défaut du navigateur (ex: enregistrer la page)
-          console.log("Raccourci Ctrl activé !");
-        }
- 
+  return !(
+    rect1.top > rect2.bottom ||
+    rect1.bottom < rect2.top ||
+    rect1.left > rect2.right ||
+    rect1.right < rect2.left
+  );
 }
+
+export const getPositionRightAndBottom = (
+  direction: "bottom" | "rigth",
+  tetrisMatrix: number[][],
+  matrix: number[][],
+  position: {
+    top: number;
+    left: number;
+  },
+) => {
+  if (direction === "bottom") {
+    const positionBottom =
+      tetrisMatrix.length - (position.top / GRID_CASE_WIDTH + matrix.length);
+    return positionBottom;
+  } else {
+    const positionRigth =
+      tetrisMatrix[0].length -
+      (position.left / GRID_CASE_WIDTH + matrix[0].length);
+    return positionRigth;
+  }
+};
+
+export const setPointOnTetris = (
+  matrix: number[][],
+  position: {
+    top: number;
+    left: number;
+  },
+  tetrisMatrix: React.RefObject<number[][]>,
+  forceTetrisRender: React.Dispatch<React.SetStateAction<number>>,
+) => {
+  const posistionTop = position.top / GRID_CASE_WIDTH;
+  const positionLeft = position.left / GRID_CASE_WIDTH;
+
+  for (let i = posistionTop; i < posistionTop + matrix.length; i++) {
+    for (let j = positionLeft; j < positionLeft + matrix[0].length; j++) {
+      tetrisMatrix.current[i][j] = matrix[i - posistionTop][j - positionLeft];
+    }
+  }
+  forceTetrisRender((forceRender) => forceRender + 1);
+};
+
+export const bottomCollision = (
+  posistionTop: number,
+  matrix: number[][],
+  tetrisMatrix: number[][],
+  positionLeft: number,
+) => {
+  for (
+    let i = posistionTop + matrix.length;
+    i < Math.min(posistionTop + matrix.length + 1, tetrisMatrix.length);
+    i++
+  ) {
+    for (let j = positionLeft; j < positionLeft + matrix[0].length; j++) {
+      if (
+        tetrisMatrix[i][j] === 1 &&
+        matrix[Math.max(0, i - posistionTop - 1)][j - positionLeft] === 1
+      )
+        return true;
+    }
+  }
+  return false;
+};
+
+export const leftCollision = (
+  posistionTop: number,
+  matrix: number[][],
+  tetrisMatrix: number[][],
+  positionLeft: number,
+) => {
+
+  
+  // for (let i = posistionTop; i < posistionTop + matrix.length; i++) {
+
+  //     tetrisMatrix[i][Math.max(0,positionLeft-1)] = matrix[i - posistionTop][positionLeft];
+
+  // }
+
+  return false;
+};

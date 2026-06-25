@@ -1,6 +1,13 @@
 
-
-body {
-  height: 100vh;
+#root{
+  margin: 0px;
+   height: 100vh;
+  
+}
+body{
+  margin: 0px;
 }
 
+html{
+   overflow-y: hidden;
+}

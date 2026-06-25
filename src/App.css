@@ -74,3 +74,24 @@
         .I .visible { background-color: #06b6d4; } /* Cyan */
         .T .visible { background-color: #a855f7; } /* Violet */
 
+        .tetris-board{
+            display: grid;
+            /* Un petit espace entre les cellules pour bien les distinguer */
+            gap: 2px;
+            /* Fond de la grille pour faire ressortir les bordures */
+            /* background-color: #ddd;
+            border: 2px solid #ccc; */
+            padding: 2px;
+            position: relative;
+          
+        }
+
+.app{
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
