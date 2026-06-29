@@ -22,7 +22,7 @@ export function rotateMatrix(matrix: number[][], sens: "left" | "rigth") {
 
 export const getInitialBoard = (rows: number, cols: number) =>
   Array.from({ length: rows }, (_, i) =>
-    Array.from({ length: cols }, (_, j) => (i > 20 && j < 10 ? 1 : 0)),
+    Array.from({ length: cols }, (_, j) => (i > 20 && j > 10 ? 1 : 0)),
   );
 
 export function verifierCollision(element1: any, element2: any) {
@@ -111,23 +111,109 @@ export const leftCollision = (
   tetrisMatrix: number[][],
   positionLeft: number,
   ecart: number,
-  setColissionEcart: React.Dispatch<React.SetStateAction<number>>,
 ) => {
-  console.log(positionLeft);
-  
-  for (let i = positionLeft; i >= Math.max(0, positionLeft - ecart); i--) {
-    console.log("line",i);
-    
-    // for (let j = posistionTop; j < posistionTop + matrix.length; i++) {
-    //   if (tetrisMatrix[i][j] === 1) {
-    //     setColissionEcart((ecart) => ecart + 1);
-    //     if (matrix[Math.max(0, i - positionLeft + ecart)][j - positionLeft] === 1)
-    //       return true;
-    //   }
-    // }
+
+
+  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
+    for (
+      let column = positionLeft;
+      column >= Math.max(positionLeft - ecart, 0);
+      column--
+    ) {
+      if (row >= 0) {
+
+        if (tetrisMatrix[row][column] === 1) {
+          // setColissionEcart((ecart) => ecart + 1);
+          console.log(column, positionLeft, ecart);
+          if (
+            matrix[row - posistionTop][Math.min(matrix[0].length - 1, column - positionLeft + ecart)] === 1
+          ) {
+            return true;
+          }
+
+        }
+      }
+    }
   }
   return false;
 };
+
+export const leftCollisionRisk = (
+  posistionTop: number,
+  matrix: number[][],
+  tetrisMatrix: number[][],
+  positionLeft: number,
+
+) => {
+
+
+  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
+    for (
+      let column = positionLeft;
+      column >= Math.max(positionLeft - 1, 0);
+      column--
+    ) {
+      if (row >= 0) {
+
+        if (tetrisMatrix[row][column] === 1) return true
+      }
+    }
+  }
+  return false;
+};
+
+
+export const rigthCollision = (
+  posistionTop: number,
+  matrix: number[][],
+  tetrisMatrix: number[][],
+  positionLeft: number,
+  ecart: number,
+) => {
+
+  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
+    for (
+      let column = positionLeft + matrix[0].length;
+      column < Math.min(positionLeft + matrix[0].length + ecart, tetrisMatrix[0].length);
+      column++
+    ) {
+      if (row >= 0) {
+        if (tetrisMatrix[row][column] === 1) {
+
+          if (
+            matrix[row - posistionTop][Math.max(0, column - positionLeft - ecart)] === 1
+          )
+            return true;
+        }
+      }
+
+    }
+  }
+
+  return false;
+};
+export const rigthCollisionRisk = (
+  posistionTop: number,
+  matrix: number[][],
+  tetrisMatrix: number[][],
+  positionLeft: number,
+) => {
+
+  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
+    for (
+      let column = positionLeft + matrix[0].length;
+      column < Math.min(positionLeft + matrix[0].length + 1, tetrisMatrix[0].length);
+      column++
+    ) {
+      if (row >= 0) {
+        if (tetrisMatrix[row][column] === 1) return true
+      }
+
+    }
+  }
+
+  return false;
+};;
 
 // export const leftCollision = (
 //   posistionTop: number,

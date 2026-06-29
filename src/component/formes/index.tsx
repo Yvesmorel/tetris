@@ -4,6 +4,9 @@ import {
   bottomCollision,
   getPositionRightAndBottom,
   leftCollision,
+  leftCollisionRisk,
+  rigthCollision,
+  rigthCollisionRisk,
   setPointOnTetris,
 } from "../../lib/utils";
 
@@ -20,11 +23,61 @@ function Forme({
 }) {
   const [position, setPosition] = useState({
     top: -matrix.length * GRID_CASE_WIDTH,
-    left: 10 * GRID_CASE_WIDTH,
+    left: 11 * GRID_CASE_WIDTH,
   });
   const [collisionEcart, setColissionEcart] = useState(1);
+  const [leftColisionEcart, setLeftColisionEcart] = useState(1)
+  const [isBottomColision, setIsBottomCollision] = useState(false);
+  const [isLeftColision, setIsLeftCollision] = useState(false);
+  const [isLeftColisionRisk, setIsleftCollisionRisk] = useState(false)
+
+  const [rightColisionEcart, setRightColisionEcart] = useState(1)
+  const [isRightColision, setIsRightCollision] = useState(false);
+  const [isRightColisionRisk, setIsRightCollisionRisk] = useState(false)
 
   const interval = useRef<number>(undefined);
+
+
+  useEffect(() => {
+
+
+
+    console.log(leftCollision(
+      position.top / GRID_CASE_WIDTH,
+      matrix,
+      tetrisMatrix.current,
+      position.left / GRID_CASE_WIDTH,
+      leftColisionEcart,
+
+    ));
+    console.log(rigthCollision(
+      position.top / GRID_CASE_WIDTH,
+      matrix,
+      tetrisMatrix.current,
+      position.left / GRID_CASE_WIDTH,
+      rightColisionEcart,
+
+    ));
+
+    setIsleftCollisionRisk(leftCollisionRisk(
+      position.top / GRID_CASE_WIDTH,
+      matrix,
+      tetrisMatrix.current,
+      position.left / GRID_CASE_WIDTH,
+    ))
+
+    setIsRightCollisionRisk(
+      rigthCollisionRisk(
+        position.top / GRID_CASE_WIDTH,
+        matrix,
+        tetrisMatrix.current,
+        position.left / GRID_CASE_WIDTH,
+      )
+    )
+    // setIsLeftCollision()
+
+  }, [position, matrix])
+
 
   useEffect(() => {
     const positionBottom = getPositionRightAndBottom(
@@ -34,12 +87,7 @@ function Forme({
       position,
     );
 
-    const positionRigth = getPositionRightAndBottom(
-      "rigth",
-      tetrisMatrix.current,
-      matrix,
-      position,
-    );
+
 
     const isBottomColision = bottomCollision(
       position.top / GRID_CASE_WIDTH,
@@ -71,18 +119,17 @@ function Forme({
   }, [position, matrix]);
 
   useEffect(() => {
+
+
+
     if (typeof window !== "undefined") {
       window.document.addEventListener("keydown", (event: KeyboardEvent) => {
         if (event.key === "ArrowLeft") {
-          
-          const isLeftColision = leftCollision(
-            position.top / GRID_CASE_WIDTH,
-            matrix,
-            tetrisMatrix.current,
-            position.left / GRID_CASE_WIDTH,
-            collisionEcart,
-            setColissionEcart,
-          );
+
+          if (isLeftColisionRisk) {
+            setLeftColisionEcart(leftColisionEcart => leftColisionEcart + 1)
+            setRightColisionEcart(collision => Math.min(1, collision - 1))
+          }
 
           if (!isLeftColision) {
             setPosition((position) => {
@@ -96,6 +143,27 @@ function Forme({
           }
         }
 
+        if (event.key === "ArrowRight") {
+
+          if (isRightColisionRisk) {
+            setRightColisionEcart(collisionEcart => collisionEcart + 1)
+            setLeftColisionEcart(collision => Math.min(1, collision - 1))
+          }
+
+          setPosition((position) => {
+            const { left, ...rest } = position;
+            const newPosition = {
+              left: Math.min(
+                (tetrisMatrix.current[0].length - matrix[0].length) *
+                GRID_CASE_WIDTH,
+                left + GRID_CASE_WIDTH,
+              ),
+              ...rest,
+            };
+            return newPosition;
+          });
+
+        }
         // const isLeftColision = leftCollision(
         //   position.top / GRID_CASE_WIDTH,
         //   matrix,
@@ -127,7 +195,7 @@ function Forme({
     return () => {
       // window.document.removeEventListener("keydown", rotate);
     };
-  }, []);
+  }, [isLeftColision]);
   return (
     <div
       className={`tetromino-grid ${name}`}
