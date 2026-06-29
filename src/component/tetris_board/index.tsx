@@ -1,29 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getInitialBoard, rotateMatrix } from "../../lib/utils";
-import { GRID_CASE_WIDTH, tetrisMatrices } from "../../data/forme";
+import {
+  getInitialBoard,
+  getRandomIntInclusive,
+  rotateMatrix,
+} from "../../lib/utils";
+import { GRID_CASE_WIDTH, letters, tetrisMatrices } from "../../data/forme";
 import Forme from "../formes";
 
 function Board({ rows, cols }: { rows: number; cols: number }) {
   const tetrisMatrix = useRef(getInitialBoard(rows, cols));
-  const [currentForm, setCurrentForm] = useState(tetrisMatrices["T"]);
+  const [selectForm, setSelectForm] = useState(
+    getRandomIntInclusive(0, letters.length - 1),
+  );
+  const [currentForm, setCurrentForm] = useState(tetrisMatrices[selectForm]);
   const [_, forceTetrisRender] = useState(0);
 
-  const rotate = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.ctrlKey) setCurrentForm((curr) => rotateMatrix(curr, "left"));
-    },
-    [currentForm],
-  );
-
-  useEffect(() => {
-  
-
-    if (typeof window !== "undefined")
-      window.document.addEventListener("keydown", rotate);
-    return () => {
-      window.document.removeEventListener("keydown", rotate);
-    };
-  }, []);
+  useEffect(()=> {setCurrentForm(tetrisMatrices[selectForm])},[selectForm])
+ 
 
   return (
     <div
@@ -37,9 +30,11 @@ function Board({ rows, cols }: { rows: number; cols: number }) {
     >
       <Forme
         matrix={currentForm}
-        name="T"
+        setMatrix={setCurrentForm}
+        name={`${letters[selectForm]}`}
         tetrisMatrix={tetrisMatrix}
         forceTetrisRender={forceTetrisRender}
+        setSelectForm={setSelectForm}
       />
       {tetrisMatrix.current.map((row, i) => {
         return row.map((cell, j) =>
@@ -48,7 +43,7 @@ function Board({ rows, cols }: { rows: number; cols: number }) {
               id={`${i}-${j}`}
               key={j}
               className="cell visible 1"
-              style={{ backgroundColor: "blue" }}
+              style={{ backgroundColor: "black" }}
             ></div>
           ) : (
             <div id={`${i}-${j}`} key={j} className="cell visible"></div>
