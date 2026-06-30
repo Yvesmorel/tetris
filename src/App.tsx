@@ -1,16 +1,16 @@
 import "./App.css";
-import Forme from "./component/formes";
 import Board from "./component/tetris_board";
-import { tetrisMatrices } from "./data/forme";
-import { rotateMatrix } from "./lib/utils";
-import { useState, useEffect, useCallback } from "react";
 function App() {
 
 
   return (
-    <div className="w-screen h-full app">
+    <div className="w-screen h-full app" style={{
+      display:'flex',
+      justifyContent:'center',
+      alignItems:'center'
+    }}>
       {/* <Forme matrix={currentForm} name="I" /> */}
-       <Board rows={30} cols={20}/>
+       <Board rows={30} cols={25}/>
     </div>
   );
 }

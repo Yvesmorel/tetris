@@ -12,6 +12,7 @@ export function rotateMatrix(
   const collision = isCollison(matrix, position, tetrisMatrix);
 
   if (collision) return matrix;
+
   const matrixRotated = [];
 
   if (sens === "rigth") {
@@ -25,6 +26,22 @@ export function rotateMatrix(
       const row = [];
       for (let j = matrix.length - 1; j >= 0; j--) row.push(matrix[j][i]);
       matrixRotated.push(row);
+    }
+    if (
+      position.top / GRID_CASE_WIDTH + matrixRotated.length >
+      tetrisMatrix.current.length - 1
+    ) {
+      // newPosition.top = position.top / GRID_CASE_WIDTH - matrixRotated.length;
+      return matrix;
+    }
+
+    if (
+      position.left / GRID_CASE_WIDTH + matrixRotated[0].length >
+      tetrisMatrix.current[0].length - 1
+    ) {
+      // newPosition.left =
+      //   position.left / GRID_CASE_WIDTH - matrixRotated[0].length;
+      return matrix;
     }
   }
 
@@ -77,14 +94,45 @@ export const setPointOnTetris = (
   },
   tetrisMatrix: React.RefObject<number[][]>,
   forceTetrisRender: React.Dispatch<React.SetStateAction<number>>,
+  tetrisPoint: React.RefObject<Record<string, any>>,
+  tetrisCol: number,
 ) => {
+  if (position.top < 0 || position.left < 0) {
+    return;
+  }
   const posistionTop = position.top / GRID_CASE_WIDTH;
   const positionLeft = position.left / GRID_CASE_WIDTH;
-
+  const deleteList: number[] = [];
   for (let i = posistionTop; i < posistionTop + matrix.length; i++) {
     for (let j = positionLeft; j < positionLeft + matrix[0].length; j++) {
-      if (tetrisMatrix.current[i][j] === 0)
+      if (tetrisMatrix.current[i][j] === 0) {
         tetrisMatrix.current[i][j] = matrix[i - posistionTop][j - positionLeft];
+        if (matrix[i - posistionTop][j - positionLeft] === 1) {
+          if (tetrisPoint.current[`${i}`]) {
+            tetrisPoint.current[`${i}`] = tetrisPoint.current[`${i}`] + 1;
+
+            if (tetrisPoint.current[`${i}`] === tetrisCol) {
+              tetrisPoint.current[`sum`] = tetrisPoint.current[`sum`] + 1;
+              deleteList.push(i);
+              if (i > 0) {
+                for (let pos = i; pos >= 1; pos--) {
+                  if (tetrisPoint.current[`${pos}`]) {
+                    tetrisPoint.current[`${pos}`] =
+                      tetrisPoint.current[`${pos - 1}`];
+                  }
+                }
+              }
+            }
+          } else tetrisPoint.current[`${i}`] = 1;
+        }
+      }
+    }
+  }
+  if (deleteList.length > 0) {
+    const newArray = Array.from({ length: tetrisCol }, (_, j) => 0);
+    for (const line of deleteList) {
+      tetrisMatrix.current.splice(line, 1);
+      tetrisMatrix.current.unshift(newArray);
     }
   }
   forceTetrisRender((forceRender) => forceRender + 1);
@@ -100,8 +148,6 @@ export const isCollison = (
 ) => {
   const posistionTop = position.top / GRID_CASE_WIDTH;
   const positionLeft = position.left / GRID_CASE_WIDTH;
-
-
 
   for (
     let i = Math.min(

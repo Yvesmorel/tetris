@@ -1,15 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GRID_CASE_WIDTH, letters } from "../../data/forme";
 import {
-  bottomCollision,
   getPositionRightAndBottom,
   getRandomIntInclusive,
   isCollison,
-  leftCollision,
-  leftCollisionRisk,
   move,
-  rigthCollision,
-  rigthCollisionRisk,
   rotateMatrix,
   setPointOnTetris,
 } from "../../lib/utils";
@@ -20,21 +15,21 @@ function Forme({
   tetrisMatrix,
   forceTetrisRender,
   setMatrix,
-  setSelectForm
+  setSelectForm,
+  tetrisPoint,
 }: {
   name: string;
   matrix: number[][];
   tetrisMatrix: React.RefObject<number[][]>;
   forceTetrisRender: React.Dispatch<React.SetStateAction<number>>;
   setMatrix: React.Dispatch<React.SetStateAction<number[][]>>;
-  setSelectForm: React.Dispatch<React.SetStateAction<number>>
+  setSelectForm: React.Dispatch<React.SetStateAction<number>>;
+  tetrisPoint: React.RefObject<Record<string, any>>;
 }) {
   const [position, setPosition] = useState({
     top: -matrix.length * GRID_CASE_WIDTH,
     left: 5 * GRID_CASE_WIDTH,
   });
-
-
 
   const interval = useRef<number>(undefined);
   const moveLeftWithKey = useCallback(
@@ -96,7 +91,7 @@ function Forme({
       if (event.ctrlKey)
         setMatrix((curr) => rotateMatrix(curr, "left", position, tetrisMatrix));
     },
-    [matrix],
+    [matrix, position],
   );
 
   useEffect(() => {
@@ -115,22 +110,33 @@ function Forme({
     );
 
     const newPosition = {
-      top: (position.top) + GRID_CASE_WIDTH,
+      top: position.top + GRID_CASE_WIDTH,
       left: position.left,
     };
     const isBottomColision = isCollison(matrix, newPosition, tetrisMatrix);
 
     if (positionBottom === 0 || isBottomColision) {
-      setPointOnTetris(matrix, position, tetrisMatrix, forceTetrisRender);
-      setSelectForm(getRandomIntInclusive(0, letters.length - 1))
+      setPointOnTetris(
+        matrix,
+        position,
+        tetrisMatrix,
+        forceTetrisRender,
+        tetrisPoint,
+        25,
+      );
+      setSelectForm(getRandomIntInclusive(0, letters.length - 1));
       setPosition({
-        top: -matrix.length * GRID_CASE_WIDTH,
+        top: (-matrix.length - 1) * GRID_CASE_WIDTH,
         left: 5 * GRID_CASE_WIDTH,
       });
-      
+
       clearInterval(interval.current);
+      window.document.removeEventListener("keydown", rotate);
+      window.document.removeEventListener("keydown", moveLeftWithKey);
+      window.document.removeEventListener("keydown", moveRightWithKey);
+      window.document.removeEventListener("keydown", moveBottomWithKey);
     } else {
-      interval.current = setInterval(() => setPosition(newPosition), 200);
+      interval.current = setInterval(() => setPosition(newPosition), 400);
     }
 
     return () => {

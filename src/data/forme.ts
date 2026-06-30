@@ -1,86 +1,37 @@
-/**
- * Dictionnaire contenant les matrices pour chaque forme de Tetris.
- * * Légende des valeurs :
- * 1 : Cellules qui constituent la forme de la pièce elle-même.
- * 0 : Cellules directement voisines (bordure invisible / "I" de l'image).
- * -1 : Le reste des colonnes (zone vide).
- */
-export const letters = [
-  // Forme T
-  "T",
+// "T", "L", "J", "S", "Z", "O", 
+export const letters = ["I"];
+export const tetrisMatrices: number[][][] = [
+  // [
+  //   [0, 1, 0],
+  //   [1, 1, 1],
+  // ],
 
-  // Forme L
-  "L",
+  // [
+  //   [0, 0, 1],
+  //   [1, 1, 1],
+  // ],
 
-  // Forme J
-  "J",
+  // [
+  //   [1, 0, 0],
+  //   [1, 1, 1],
+  // ],
 
-  // Forme S
-  "S",
+  // [
+  //   [0, 1, 1],
+  //   [1, 1, 0],
+  // ],
 
-  // Forme Z
-  "Z",
+  // [
+  //   [1, 1, 0],
+  //   [0, 1, 1],
+  // ],
 
-  // Forme O (Carré)
-  "O",
+  // [
+  //   [1, 1],
+  //   [1, 1],
+  // ],
 
-  // Forme I (Ligne)
-  "I",
-];
-export const tetrisMatrices:number[][][] = [
-
-  [
-    [0, 1, 0],
-    [1, 1, 1],
-  ],
-
-
-  [
-
-    [ 0, 0, 1],
-    [ 1, 1, 1],
-   
-  ],
-
-
-  [
-  
-    [ 1, 0, 0 ],
-    [ 1, 1, 1],
-  
-  ],
-
-  [
-
-  
-    [ 0, 1, 1,],
-    [ 1, 1, 0],
-   
-  ],
-
-
-  [
- 
-    [ 1, 1, 0, ],
-    [0, 1, 1, ],
-  
-  ],
-
-
-  [
-   
-    [ 1, 1],
-    [ 1, 1],
-  
-  ],
-
-
-  [
-    
-   
-      [0, 1, 1, 1, 1, 0],
-   
-  ],
+  [[1, 1, 1, 1]],
 ];
 
 const CASE_BORDER = 4;
