@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GRID_CASE_WIDTH, letters } from "../../data/forme";
+import { useSound } from 'react-sounds';
 import {
   getPositionRightAndBottom,
   getRandomIntInclusive,
@@ -30,11 +31,16 @@ function Forme({
     top: -matrix.length * GRID_CASE_WIDTH,
     left: 5 * GRID_CASE_WIDTH,
   });
-
+  const { play: playMissedSound } = useSound('game/miss');
+  const { play: playCoinSound } = useSound('arcade/coin');
+  const { play: playDropSound } = useSound('ui/success_blip');
   const interval = useRef<number>(undefined);
+  const timeOut = useRef<number>(undefined);
   const moveLeftWithKey = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
+
+
         move(
           {
             top: position.top,
@@ -52,12 +58,13 @@ function Forme({
   const moveRightWithKey = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
+        playMissedSound()
         move(
           {
             top: position.top,
             left: Math.min(
               (tetrisMatrix.current[0].length - matrix[0].length) *
-                GRID_CASE_WIDTH,
+              GRID_CASE_WIDTH,
               position.left + GRID_CASE_WIDTH,
             ),
           },
@@ -73,6 +80,7 @@ function Forme({
   const moveBottomWithKey = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "ArrowDown") {
+        playMissedSound()
         move(
           {
             top: position.top + GRID_CASE_WIDTH,
@@ -88,6 +96,8 @@ function Forme({
   );
   const rotate = useCallback(
     (event: KeyboardEvent) => {
+      playMissedSound()
+
       if (event.ctrlKey)
         setMatrix((curr) => rotateMatrix(curr, "left", position, tetrisMatrix));
     },
@@ -95,6 +105,12 @@ function Forme({
   );
 
   useEffect(() => {
+
+    if (tetrisPoint.current[`win`]) {
+      playCoinSound()
+      tetrisPoint.current[`win`] = false;
+      forceTetrisRender((forceRender) => forceRender + 1);
+    }
     if (typeof window !== "undefined") {
       window.document.addEventListener("keydown", moveLeftWithKey);
       window.document.addEventListener("keydown", moveRightWithKey);
@@ -116,27 +132,33 @@ function Forme({
     const isBottomColision = isCollison(matrix, newPosition, tetrisMatrix);
 
     if (positionBottom === 0 || isBottomColision) {
-      setPointOnTetris(
-        matrix,
-        position,
-        tetrisMatrix,
-        forceTetrisRender,
-        tetrisPoint,
-        25,
-      );
-      setSelectForm(getRandomIntInclusive(0, letters.length - 1));
-      setPosition({
-        top: (-matrix.length - 1) * GRID_CASE_WIDTH,
-        left: 5 * GRID_CASE_WIDTH,
-      });
-
-      clearInterval(interval.current);
-      window.document.removeEventListener("keydown", rotate);
-      window.document.removeEventListener("keydown", moveLeftWithKey);
-      window.document.removeEventListener("keydown", moveRightWithKey);
       window.document.removeEventListener("keydown", moveBottomWithKey);
+      playDropSound()
+
+      timeOut.current = setTimeout(() => {
+        setPointOnTetris(
+          matrix,
+          position,
+          tetrisMatrix,
+          forceTetrisRender,
+          tetrisPoint,
+          25,
+        );
+        setSelectForm(getRandomIntInclusive(0, letters.length - 1));
+        setPosition({
+          top: (-matrix.length - 1) * GRID_CASE_WIDTH,
+          left: 5 * GRID_CASE_WIDTH,
+        });
+
+        clearInterval(interval.current);
+        window.document.removeEventListener("keydown", rotate);
+        window.document.removeEventListener("keydown", moveLeftWithKey);
+        window.document.removeEventListener("keydown", moveRightWithKey);
+
+      }, 500)
+
     } else {
-      interval.current = setInterval(() => setPosition(newPosition), 400);
+      interval.current = setInterval(() => setPosition(newPosition), 300);
     }
 
     return () => {
@@ -145,10 +167,11 @@ function Forme({
       window.document.removeEventListener("keydown", moveRightWithKey);
       window.document.removeEventListener("keydown", moveBottomWithKey);
       if (interval.current) clearInterval(interval.current);
+      if (timeOut.current) clearTimeout(timeOut.current);
     };
   }, [position, matrix]);
 
-  useEffect(() => {}, [position, matrix]);
+  useEffect(() => { }, [position, matrix]);
 
   return (
     <div

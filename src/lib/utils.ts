@@ -113,6 +113,7 @@ export const setPointOnTetris = (
 
             if (tetrisPoint.current[`${i}`] === tetrisCol) {
               tetrisPoint.current[`sum`] = tetrisPoint.current[`sum`] + 1;
+              tetrisPoint.current[`win`] = true;
               deleteList.push(i);
               if (i > 0) {
                 for (let pos = i; pos >= 1; pos--) {
@@ -168,159 +169,13 @@ export const isCollison = (
   return false;
 };
 
-export const bottomCollision = (
-  posistionTop: number,
-  matrix: number[][],
-  tetrisMatrix: number[][],
-  positionLeft: number,
-  ecart: number,
-  setColissionEcart: React.Dispatch<React.SetStateAction<number>>,
-  setBottomColisionRisk: React.Dispatch<React.SetStateAction<boolean>>,
-  isBottomColisionRisk: boolean,
-) => {
-  for (
-    let i = posistionTop + matrix.length;
-    i < Math.min(posistionTop + matrix.length + ecart, tetrisMatrix.length);
-    i++
-  ) {
-    for (let j = positionLeft; j < positionLeft + matrix[0].length; j++) {
-      if (tetrisMatrix[i][j] === 1) {
-        if (
-          matrix[Math.max(0, i - posistionTop - ecart)][j - positionLeft] === 1
-        )
-          return true;
-      }
-    }
-  }
-  return false;
-};
 
-export const rigthCollision = (
-  posistionTop: number,
-  matrix: number[][],
-  tetrisMatrix: number[][],
-  positionLeft: number,
-  ecart: number,
-) => {
-  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
-    for (
-      let column = positionLeft + matrix[0].length;
-      column <
-      Math.min(positionLeft + matrix[0].length + ecart, tetrisMatrix[0].length);
-      column++
-    ) {
-      if (row >= 0) {
-        if (tetrisMatrix[row][column] === 1) {
-          if (
-            matrix[row - posistionTop][
-              Math.max(0, column - positionLeft - ecart)
-            ] === 1
-          )
-            return true;
-        }
-      }
-    }
-  }
 
-  return false;
-};
-export const leftCollision = (
-  posistionTop: number,
-  matrix: number[][],
-  tetrisMatrix: number[][],
-  positionLeft: number,
-  ecart: number,
-) => {
-  let nEcart = 1;
-  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
-    for (
-      let column = positionLeft;
-      column >= Math.max(positionLeft - nEcart, 0);
-      column--
-    ) {
-      if (row >= 0) {
-        if (tetrisMatrix[row][column] === 1) {
-          // setColissionEcart((ecart) => ecart + 1);
 
-          for (let i = matrix[0].length - 1; i >= 0; i--) {
-            if (matrix[row - posistionTop][i] === 1) {
-              nEcart = Math.max(nEcart, i + 1);
-              break;
-            }
-          }
 
-          if (
-            matrix[row - posistionTop][
-              Math.min(matrix[0].length - 1, column - positionLeft + nEcart)
-            ] === 1
-          ) {
-            return true;
-          }
-        }
-      }
-    }
-  }
-  return false;
-};
 
-const collisionEcartLeft = () => {};
 
-export const leftCollisionRisk = (
-  posistionTop: number,
-  matrix: number[][],
-  tetrisMatrix: number[][],
-  positionLeft: number,
-) => {
-  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
-    for (
-      let column = positionLeft;
-      column >= Math.max(positionLeft - 1, 0);
-      column--
-    ) {
-      if (row >= 0) {
-        if (tetrisMatrix[row][column] === 1) return true;
-      }
-    }
-  }
-  return false;
-};
 
-export const rigthCollisionRisk = (
-  posistionTop: number,
-  matrix: number[][],
-  tetrisMatrix: number[][],
-  positionLeft: number,
-) => {
-  for (let row = posistionTop; row < posistionTop + matrix.length; row++) {
-    for (
-      let column = positionLeft + matrix[0].length;
-      column <
-      Math.min(positionLeft + matrix[0].length + 1, tetrisMatrix[0].length - 1);
-      column++
-    ) {
-      if (row >= 0) {
-        if (tetrisMatrix[row][column] === 1) return true;
-      }
-    }
-  }
-
-  return false;
-};
-
-// export const leftCollision = (
-//   posistionTop: number,
-//   matrix: number[][],
-//   tetrisMatrix: number[][],
-//   positionLeft: number,
-// ) => {
-//   // for (let i = posistionTop; i < posistionTop + matrix.length; i++) {
-
-//   //     tetrisMatrix[i][Math.max(0,positionLeft-1)] = matrix[i - posistionTop][positionLeft];
-
-//   // }
-
-//   return false;
-// };
 
 export const move = (
   position: {
